@@ -421,4 +421,12 @@ declare namespace RageEnums {
 		INFO = "info",
 		WARNING = "warning"
 	}
+
+	const enum EntityType {
+		NO_ENTITY,
+		PED,
+		VEHICLE,
+		OBJECT,
+		PLAYER
+	}
 }
