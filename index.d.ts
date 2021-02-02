@@ -1048,6 +1048,9 @@ interface MarkerMp extends EntityMp {
   // TODO
 }
 
+/**
+ * Описывает игровой объект.
+ */
 interface ObjectMp extends EntityMp {
   hidden: boolean;
   isWeak: boolean;
@@ -1055,17 +1058,36 @@ interface ObjectMp extends EntityMp {
   streamingRange: number;
   rotation: Vector3Mp;
 
-  hasBeenBroken(): boolean;
+	hasBeenBroken(): boolean;
+	/**
+	 * Проверяет, находится объект в поле зрения видимости или нет.
+	 */
   isVisible(): boolean;
   markForDeletion(): void;
   placeOnGroundProperly(): boolean;
   setActivatePhysicsAsSoonAsItIsUnfrozen(toggle: boolean): void;
   setPhysicsParams(weight: number, p1: number, p2: number, p3: number, p4: number, gravity: number, p6: number,
     p7: number, p8: number, p9: number, buoyancy: number): void;
-  setTargettable(targettable: boolean): void;
+	setTargettable(targettable: boolean): void;
+	/**
+	 * Возвращает true, если объект завершил движение. Если false, то перемещает объект в направлении указанных `toX`, `toY` и `toZ` координат с указанной `speedX`, `speedY` и `speedZ` скоростью.
+	 * @remarks
+	 * Данная функция должна вызываться при рендере, иначе объект не будет скользить, а немного сдвинется и остановится.
+	 * @param toX координата x
+	 * @param toY координата y
+	 * @param toZ координата z
+	 * @param speedX скорость по оси x
+	 * @param speedY скорость по оси y
+	 * @param speedZ скорость по оси z
+	 * @param collision включает/отключает коллизию для объекта
+	 * @return true - объект закончил движение
+	 */
   slide(toX: number, toY: number, toZ: number, speedX: number, speedY: number, speedZ: number, collision: boolean): boolean;
 }
 
+/**
+ * Описывает педа (неиграбельный персонаж).
+ */
 interface PedBaseMp extends EntityMp {
   applyBlood(boneIndex: number, xRot: number, yRot: number, zRot: number, woundType: string): void;
   applyBloodByZone(p1: any, p2: number, p3: number, p4: any): void;
@@ -1073,47 +1095,174 @@ interface PedBaseMp extends EntityMp {
   applyBloodSpecific(p1: any, p2: number, p3: number, p4: number, p5: number, p6: any, p7: number, p8: any): void;
   applyDamageDecal(p1: number, p2: number, p3: number, p4: number, p5: number, p6: number, p7: number, p8: boolean,
     p9: string): void;
-  applyDamagePack(damagePack: string, damage: number, mult: number): void;
-  applyDamageTo(damageAmount: number, p2: boolean): void;
-  canInCombatSeeTarget(target: Handle): boolean;
-  canKnockOffVehicle(): boolean;
-  canRagdoll(): boolean;
+	/**
+	 * Накладывает декали (эффекты) урона.
+	 * @remarks
+	 * Список декалей можно посмотреть [здесь](https://gist.github.com/alexguirre/f3f47f75ddcf617f416f3c8a55ae2227).
+	 * @param {RageEnums.DamagePack | string} damagePack название эффекта
+	 * @param {number} damage наносимый урон
+	 * @param {number} mult множитель эффекта
+	 */
+	applyDamagePack(damagePack: RageEnums.DamagePack | string, damage: number, mult: number): void;
+	/**
+	 * Наносит урон персонажу.
+	 * @param {number} damageAmount наносимый урон
+	 * @param {boolean} p2
+	 */
+	applyDamageTo(damageAmount: number, p2: boolean): void;
+	canInCombatSeeTarget(target: Handle): boolean;
+	/**
+	 * Проверяет, может персонаж сбить транспорт или нет.
+	 */
+	canKnockOffVehicle(): boolean;
+	/**
+	 * Проверяет, может персонаж упасть или нет.
+	 * @remarks
+	 * Пример: может предотвратить падение персонажей, когда они стоят на движущемся транспорте.
+	 */
+	canRagdoll(): boolean;
+	/**
+	 * Убирает все аксессуары у персонажа.
+	 */
   clearAllProps(): void;
-  clearAlternateMovementAnim(stance: number, p2: number): void;
+	clearAlternateMovementAnim(stance: number, p2: number): void;
+	/**
+	 * Убирает все декали урона (кровь) с персонажа.
+	 */
   clearBloodDamage(): void;
   clearBloodDamageByZone(p1: number): void;
-  clearDamageDecalByZone(p1: number, p2: string): void;
+	clearDamageDecalByZone(p1: number, p2: string): void;
+	/**
+	 * Убирает все татуировки и декали одежды с персонажа.
+	 */
   clearDecorations(): void;
   clearDriveByClipsetOverride(): void;
-  clearDrivebyTaskUnderneathDrivingTask(): void;
-  clearFacialDecorations(): void;
+	clearDrivebyTaskUnderneathDrivingTask(): void;
+	/**
+	 * Убирает все татуировки и декали на лице персонажа.
+	 */
+	clearFacialDecorations(): void;
+	/**
+	 * Сбрасывает лицевую анимацию.
+	 */
   clearFacialIdleAnimOverride(): void;
-  clearLastDamageBone(): void;
-  clearProp(propId: number): void;
-  clearTasks(): void;
-  clearTasksImmediately(): void;
-  clearWetness(): void;
+	clearLastDamageBone(): void;
+	/**
+	 * Удаляет аксессуар указанного компонента.
+	 * @param {RageEnums.PedComponent | number} propId ID компонента
+	 */
+	clearProp(propId: RageEnums.PedComponent | number): void;
+	/**
+	 * Останавливает все взаимодействия игрока.
+	 */
+	clearTasks(): void;
+	/**
+	 * Мгновенно останавливает все взаимодейтсвия игрока.
+	 */
+	clearTasksImmediately(): void;
+	/**
+	 * Делает одежду персонажа сухой.
+	 */
+	clearWetness(): void;
+	/**
+	 * Создаёт клон персонажа.
+	 * @param {number} heading угол поворота
+	 * @param {boolean} networkHandle
+	 * @param {boolean} pedHandle
+	 * @returns {Handle} указатель на созданного персонажа
+	 */
   clone(heading: number, networkHandle: boolean, pedHandle: boolean): Handle;
-  cloneToTarget(ped2: Handle): void;
-  controlMountedWeapon(): boolean;
+	cloneToTarget(ped2: Handle): void;
+	/**
+	 * Заставляет персонажа использовать навесное оружие.
+	 * @return {boolean} false, если задача невозможна.
+	 */
+	controlMountedWeapon(): boolean;
+	/**
+	 * Принудительно заставляет персонажа совершить указанное движение.
+	 * @remarks
+	 * Типы движений можно посмотреть [здесь](https://wiki.rage.mp/index.php?title=Player::forceMotionState).
+	 * @param {Hash} motionStateHash тип состояния движения
+	 * @param {boolean} p2
+	 * @param {boolean} p3
+	 * @param {boolean} p4
+	 * @return {boolean} true, если действие было успешно выполнено
+	 */
   forceMotionState(motionStateHash: Hash, p2: boolean, p3: boolean, p4: boolean): boolean;
-  forceToOpenParachute(): void;
-  getAccuracy(): number;
-  getAlertness(): number;
-  getAmmoInClip(weapon: Hash): number;
-  getArmour(): number;
-  getBoneCoords(boneId: number, offsetX: number, offsetY: number, offsetZ: number): Vector3Mp;
-  getBoneIndex(boneId: number): number;
-  getCauseOfDeath(): Hash;
+	/**
+	 * Принудительно открывает парашют (только когда он экипирован).
+	 */
+	forceToOpenParachute(): void;
+	/**
+	 * Возвращает значение точности прицеливания персонажа.
+	 * @return {number} точность прицеливания [0; 100]
+	 */
+	getAccuracy(): number;
+	/**
+	 * Возвращает уровень бдительности игрока.
+	 * @return {number} уровень бдительности:
+	 * - -1 - персонаж не найден
+	 * - 0 - спокойный
+	 * - 1 - слышал что-то (звуки выстрела, удар и прочее)
+	 * - 2 - осведомлен (о происхождении события)
+	 * - 3 - полностью предупреждён (встречает событие?)
+	 */
+	getAlertness(): number;
+	/**
+	 * Возвращает количество патронов в обойме указанного оружия.
+	 * @remarks
+	 * Вернёт 0, если указанное оружие не в руках у персонажа.
+	 * @param {Hash} weapon модель оружия
+	 * @return {number} количество патронов.
+	 */
+	getAmmoInClip(weapon: Hash): number;
+	/**
+	 * Возвращает значение брони.
+	 * @return {number} показатель брони [0; 100]
+	 */
+	getArmour(): number;
+	/**
+	 * Возвращает координаты указанной кости персонажа.
+	 * @param {RageEnums.Bone | number} boneId ID кости
+	 * @param {number} offsetX смещение координаты по оси X
+	 * @param {number} offsetY смещение координаты по оси Y
+	 * @param {number} offsetZ смещение координаты по оси Z
+	 * @return {Vector3} координаты
+	 */
+  getBoneCoords(boneId: RageEnums.Bone | number, offsetX: number, offsetY: number, offsetZ: number): Vector3Mp;
+	/**
+	 * Возвращает индекс кости по ID.
+	 * @param {number} boneId ID кости
+	 * @return {number} индекс кости. Вернёт -1, если кость не была найдена.
+	 */
+	getBoneIndex(boneId: number): number;
+	/**
+	 * Возвращает хэш оружия/модели/объекта, который убил персонажа.
+	 * @return {Hash} хэш. Вернёт 0, если персонаж не умер.
+	 */
+	getCauseOfDeath(): Hash;
   getCombatFloat(ped: Handle, p1: number): number
   getCombatMovement(): number;
-  getCombatRange(): number;
-  getConfigFlag(flagId: number, p2: boolean): boolean;
+	getCombatRange(): number;
+	/**
+	 * Устанавливает персонажу флаг конфигурации.
+	 * @param {RageEnums.ConfigFlag | number} flagId флаг конфигурации
+	 * @param {boolean} p2
+	 * @return {boolean} состояние флага
+	 */
+  getConfigFlag(flagId: RageEnums.ConfigFlag | number, p2: boolean): boolean;
   getDeadPickupCoords(p1: number, p2: number): Vector3Mp;
   getDecorationsState(): number;
   getDefensiveAreaPosition(p1: boolean): Vector3Mp;
-  getDesiredMoveBlendRatio(): number;
-  getDrawableVariation(componentId: number): number;
+	getDesiredMoveBlendRatio(): number;
+	/**
+	 * Возвращает установленный ID аксессуара на указанном компоненте.
+	 * @remarks
+	 * Доступные компоненты для аксессуаров можно посмотреть [здесь](https://gtaxscripting.blogspot.com/2016/04/gta-v-peds-component-and-props.html).
+	 * @param {RageEnums.PedComponent | number} componentId ID компонента
+	 * @return {number} номер аксессуара.
+	 */
+  getDrawableVariation(componentId: RageEnums.PedComponent | number): number;
   getEnveffScale(): number;
   getExtractedDisplacement(worldSpace: boolean): Vector3Mp;
   getFloodInvincibility(p1: boolean): void;
